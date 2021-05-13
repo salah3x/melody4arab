@@ -54,7 +54,6 @@ Use the metadata file to download the songs:
 
 ```javascript
 const download = require('./melody4arab').download
-const fs = require('fs');
 
 download('Cheb Bilal.metadata.json')
 ```
@@ -69,4 +68,4 @@ Cheb Bilal
 └─ ...
    └── ...
 ```
-> If the script fails, re-exute it and it will skip any downloaded files.
+> If the script fails, re-exute it and it will skip any downloaded files and continue from where it crashed.
