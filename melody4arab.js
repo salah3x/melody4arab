@@ -50,13 +50,17 @@ async function downloadMetadata(url) {
 
 async function download(fileName) {
     const metadata = JSON.parse(fs.readFileSync(fileName, 'utf8'))
-    fs.mkdirSync(metadata.artistName)
-    console.info(`[*] Downloading albums for '${metadata.artistName}'...`)
+    if (!fs.existsSync(metadata.artistName))
+        fs.mkdirSync(metadata.artistName)
+    console.info(`[*] Downloading ${metadata.albums.length} albums for '${metadata.artistName}'...`)
     for (let [i, album] of metadata.albums.entries()) {
-        fs.mkdirSync(path.join(metadata.artistName, album.name))
+        if (!fs.existsSync(path.join(metadata.artistName, album.name)))
+            fs.mkdirSync(path.join(metadata.artistName, album.name))
         for (let s of album.songs) {
-            const r = await axios.get(s.downloadLink, { responseType: 'stream' })
-            await r.data.pipe(fs.createWriteStream(path.join(metadata.artistName, album.name, `${s.name}.mp3`)))
+            if (!fs.existsSync(path.join(metadata.artistName, album.name, `${s.name}.mp3`))) {
+                const r = await axios.get(s.downloadLink, { responseType: 'stream' })
+                await r.data.pipe(fs.createWriteStream(path.join(metadata.artistName, album.name, `${s.name}.mp3`)))
+            }
         }
         console.info(`[+] ${i + 1}- ${album.name} (${album.songs.length} songs)`)
     }
